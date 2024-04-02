@@ -1,3 +1,34 @@
+class Node:
+    def __init__(self, name):
+        self.name = name
+        self.parents = []
+        self.children = []
+        self.probabilities = {}
+
+    def add_parent(self, parent_node):
+        self.parents.append(parent_node)
+
+    def add_child(self, child_node):
+        self.children.append(child_node)
+
+    def set_probability(self, parents_values, probability):
+        self.probabilities[tuple(parents_values)] = probability
+
+    def get_name(self):
+        return self.name
+
+    def get_parents(self):
+        return self.parents
+
+    def get_children(self):
+        return self.children
+
+    def get_probability(self, parents_values):
+        return self.probabilities.get(tuple(parents_values), None)
+
+    def __str__(self):
+        return f"Node: {self.name}"
+
 # Creazione dei nodi
 health_node = Node("Health")
 sleep_node = Node("Sleep")
@@ -50,14 +81,9 @@ class_attention_node.set_probability(("Positivo", "Negativo"), 0.5)
 class_attention_node.set_probability(("Negativo", "Positivo"), 0.4)
 class_attention_node.set_probability(("Negativo", "Negativo"), 0.2)
 
-# Aggiunta dei nodi alla rete bayesiana
-bayesian_network = BayesianNetwork()
-bayesian_network.add_node(health_node)
-bayesian_network.add_node(sleep_node)
-bayesian_network.add_node(diet_node)
-bayesian_network.add_node(stress_node)
-bayesian_network.add_node(mood_node)
-bayesian_network.add_node(study_time_node)
-bayesian_network.add_node(class_attention_node)
+# Stampa dei nodi e delle probabilità associate
+for node in [health_node, sleep_node, diet_node, stress_node, mood_node, study_time_node, class_attention_node]:
+    print(f"{node.get_name()}: {node.probabilities}")
 
+# Output di prova
 print("prova")
