@@ -1,18 +1,22 @@
+import random
+
+
 class Node:
-    def __init__(self, name):
+    def __init__(self, name, states=["Positive", "Negative"], parents=[], probabilities={}):
         self.name = name
-        self.parents = []
-        self.children = []
-        self.probabilities = {}
+        self.states = states
+        self.parents = parents
+        self.probabilities = probabilities
+        self.current_state = None  # Aggiungo l'attributo per memorizzare lo stato corrente
 
-    def add_parent(self, parent_node):
-        self.parents.append(parent_node)
+    def set_parents(self, parents):
+        self.parents = parents
 
-    def add_child(self, child_node):
-        self.children.append(child_node)
-
-    def set_probability(self, parents_values, probability):
-        self.probabilities[tuple(parents_values)] = probability
+    def set_probabilities(self, probabilities):
+        self.probabilities = probabilities
+    
+    def set_current_state(self, value): 
+        self_current_state = value
 
     def get_name(self):
         return self.name
@@ -20,70 +24,130 @@ class Node:
     def get_parents(self):
         return self.parents
 
-    def get_children(self):
-        return self.children
+    def get_states(self):
+        return self.states
+     
+    def get_current_state(self): 
+        return  self.current_state
 
-    def get_probability(self, parents_values):
-        return self.probabilities.get(tuple(parents_values), None)
+    def get_probability(self, node_state, parent_states):
+        parent_key = tuple(sorted(parent_states.items()))
+        probability = self.probabilities[node_state][parent_key]
+        return probability
 
-    def __str__(self):
-        return f"Node: {self.name}"
+    def get_probability_by_values(self, node_value, parent_values):
+        parent_key = tuple(sorted(parent_values.items()))
+        probability = self.probabilities[node_value][parent_key]
+        return probability
+    
+    def set_state_probabilistically(self):
+        for parent in self.parents(): 
+            print(parent)
+            print(parent.get_current_state())
+        print(self.probabilities)
 
-# Creazione dei nodi
-health_node = Node("Health")
-sleep_node = Node("Sleep")
-diet_node = Node("Diet")
-stress_node = Node("Stress")
-mood_node = Node("Mood")
-study_time_node = Node("Study Time")
-class_attention_node = Node("Class Attention")
+# node 1
+health_node = Node(name="Health", probabilities={
+    "Positive": {
+        (): 0.7,
+    }
+})
 
-# parents definition for every node
-sleep_node.add_parent(health_node)
-sleep_node.add_parent(stress_node)
+# node 2
+sleep_node = Node(name="Sleep", parents=["Health", "Stress"], probabilities= {
+    "Positive": {
+        (("Health", "Positive"), ("Stress", "Positive")): 0.8,
+        (("Health", "Positive"), ("Stress", "Negative")): 0.7,
+        (("Health", "Negative"), ("Stress", "Positive")): 0.4,
+        (("Health", "Negative"), ("Stress", "Negative")): 0.3,
+    }
+})
 
-diet_node.add_parent(health_node)
+# node 3
+diet_node = Node(name="Diet", parents=["Health"], probabilities={
+    "Positive": {
+        (("Health", "Positive"),): 0.8,
+        (("Health", "Negative"),): 0.3,
+    }
+})
 
-stress_node.add_parent(health_node)
+# node 4
+stress_node = Node(name="Stress", parents=["Health"], probabilities={
+    "Positive": {
+        (("Health", "Positive"),): 0.2,
+        (("Health", "Negative"),): 0.7,
+    }
+})
 
-mood_node.add_parent(health_node)
-mood_node.add_parent(sleep_node)
+# node 5
+mood_node = Node(name="Mood", parents=["Health", "Sleep"], probabilities={
+    "Positive": {
+        (("Health", "Positive"), ("Sleep", "Positive")): 0.8,
+        (("Health", "Positive"), ("Sleep", "Negative")): 0.7,
+        (("Health", "Negative"), ("Sleep", "Positive")): 0.4,
+        (("Health", "Negative"), ("Sleep", "Negative")): 0.3,
+    }
+})
 
-study_time_node.add_parent(mood_node)
+# node 6
+study_time_node = Node(name="Study Time", parents=["Mood"], probabilities={
+    "Positive": {
+        (("Mood", "Positive"),): 0.6,
+        (("Mood", "Negative"),): 0.3,
+    }
+})
 
-class_attention_node.add_parent(mood_node)
-class_attention_node.add_parent(study_time_node)
+# node 7
+class_attention_node = Node(name="Class Attention", parents=["Mood", "Study Time"], probabilities={
+    "Positive": {
+        (("Mood", "Positive"), ("Study Time", "Positive")): 0.7,
+        (("Mood", "Positive"), ("Study Time", "Negative")): 0.5,
+        (("Mood", "Negative"), ("Study Time", "Positive")): 0.4,
+        (("Mood", "Negative"), ("Study Time", "Negative")): 0.2,
+    }
+})
 
-# Definizione delle probabilità per ogni nodo
-health_node.set_probability((), 0.7)
+# node 8
+workload_node = Node(
+    name="Workload",
+    states=["Positive", "Negative"],
+    parents=["Stress"],
+    probabilities={
+        "Positive": {
+            (("Stress", "Positive"),): 0.8,
+            (("Stress", "Negative"),): 0.4,
+        }
+    }
+)
 
-sleep_node.set_probability(("Positivo", "Positivo"), 0.8)
-sleep_node.set_probability(("Positivo", "Negativo"), 0.7)
-sleep_node.set_probability(("Negativo", "Positivo"), 0.4)
-sleep_node.set_probability(("Negativo", "Negativo"), 0.3)
+# node 9
+interest_study_node = Node(
+    name="Interest",
+    states=["Positive", "Negative"],
+    parents=["Mood"],
+    probabilities={
+        "Positive": {
+            (("Mood", "Positive"),): 0.6,
+            (("Mood", "Negative"),): 0.3,
+        }
+    }
+)
 
-diet_node.set_probability(("Positivo",), 0.8)
-diet_node.set_probability(("Negativo",), 0.3)
+# node 10
+study_frequency_node = Node(
+    name="Study Frequency",
+    states=["Positive", "Negative"],
+    parents=["Interest"],
+    probabilities={
+        "Positive": {
+            (("Interest", "Positive"),): 0.7,
+            (("Interest", "Negative"),): 0.3,
+        }
+    }
+)
 
-stress_node.set_probability(("Positivo",), 0.2)
-stress_node.set_probability(("Negativo",), 0.7)
-
-mood_node.set_probability(("Positivo", "Positivo"), 0.8)
-mood_node.set_probability(("Positivo", "Negativo"), 0.7)
-mood_node.set_probability(("Negativo", "Positivo"), 0.4)
-mood_node.set_probability(("Negativo", "Negativo"), 0.3)
-
-study_time_node.set_probability(("Positivo",), 0.6)
-study_time_node.set_probability(("Negativo",), 0.4)
-
-class_attention_node.set_probability(("Positivo", "Positivo"), 0.7)
-class_attention_node.set_probability(("Positivo", "Negativo"), 0.5)
-class_attention_node.set_probability(("Negativo", "Positivo"), 0.4)
-class_attention_node.set_probability(("Negativo", "Negativo"), 0.2)
-
-# Stampa dei nodi e delle probabilità associate
-for node in [health_node, sleep_node, diet_node, stress_node, mood_node, study_time_node, class_attention_node]:
-    print(f"{node.get_name()}: {node.probabilities}")
-
-# Output di prova
-print("prova")
+# Esempio di utilizzo
+# Imposta lo stato del nodo health_node in modo probabilistico
+health_node.set_state_probabilistically()
+health_node.set_current_state('Positive')
+stress_node.set_state_probabilistically()
