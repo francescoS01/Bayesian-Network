@@ -29,4 +29,19 @@ class Network:
                 if parents_count[child] == 0:
                     no_parents.append(child)
 
+        self.net_nodes = visited 
         return visited
+    
+    def sampling_create(self): 
+        nodes = self.topological_sort()
+        sampling = {}
+        for node in nodes: 
+            node_name = node.get_name()
+            node_value = node.value_generate()
+            sampling[node_name] = node_value
+            node.set_current_state(node_value)
+        
+        return sampling
+            
+
+
