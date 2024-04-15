@@ -42,6 +42,3 @@ class Network:
             node.set_current_state(node_value)
         
         return sampling
-            
-
-

@@ -48,8 +48,8 @@ cpt = [
     {healt_name: 'good', nutr_name: 'not good', pysicalex_name: 'not good', 'prob':0.3},
     {healt_name: 'not good', nutr_name: 'good', pysicalex_name: 'good', 'prob':0.2},
     {healt_name: 'not good', nutr_name: 'good', pysicalex_name: 'not good', 'prob':0.3},
-    {healt_name: 'not good', nutr_name: 'not good', pysicalex_name: 'good', 'prob':0.9},
-    {healt_name: 'not good', nutr_name: 'not good', pysicalex_name: 'not good', 'prob':0.2}]
+    {healt_name: 'not good', nutr_name: 'not good', pysicalex_name: 'good', 'prob':0.4},
+    {healt_name: 'not good', nutr_name: 'not good', pysicalex_name: 'not good', 'prob':0.7}]
 healt_node = BayesianNode(healt_name, healt_possibile_value, cpt, current_value, children, parents)
 
 
